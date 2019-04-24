@@ -22,7 +22,7 @@ else:
 	svmscale_exe = r"..\windows\svm-scale.exe"
 	svmtrain_exe = r"..\windows\svm-train.exe"
 	svmpredict_exe = r"..\windows\svm-predict.exe"
-	gnuplot_exe = r"c:\tmp\gnuplot\binary\pgnuplot.exe"
+	gnuplot_exe = r"..\gnuplot\bin\gnuplot.exe"
 	grid_py = r".\grid.py"
 
 assert os.path.exists(svmscale_exe),"svm-scale executable not found"
@@ -49,16 +49,14 @@ cmd = '{0} -s "{1}" "{2}" > "{3}"'.format(svmscale_exe, range_file, train_pathna
 print('Scaling training data...')
 Popen(cmd, shell = True, stdout = PIPE).communicate()
 
-cmd = '{0} -svmtrain "{1}" -gnuplot "{2}" "{3}"'.format(grid_py, svmtrain_exe, gnuplot_exe, scaled_file)
+cmd = '{0} "{1}"'.format(grid_py, scaled_file)
 print('Cross validation...')
-f = Popen(cmd, shell = True, stdout = PIPE).stdout
+out = check_output(['python','grid.py',scaled_file])
+paras = out.decode("utf-8").split(' ')
 
-line = ''
-while True:
-	last_line = line
-	line = f.readline()
-	if not line: break
-c,g,rate = map(float,last_line.split())
+c = paras[0]
+g = paras[1]
+rate = paras[2]
 
 print('Best c={0}, g={1} CV rate={2}'.format(c,g,rate))
 

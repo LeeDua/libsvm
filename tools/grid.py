@@ -18,13 +18,14 @@ class GridOption:
 	def __init__(self, dataset_pathname, options):
 		dirname = os.path.dirname(__file__)
 		if sys.platform != 'win32':
+			print("not in windows")
 			self.svmtrain_pathname = os.path.join(dirname, '../svm-train')
-			self.gnuplot_pathname = '/usr/bin/gnuplot'
+			self.gnuplot_pathname = '../gnuplot/bin/gnuplot.exe'
 		else:
 			# example for windows
 			self.svmtrain_pathname = os.path.join(dirname, r'..\windows\svm-train.exe')
 			# svmtrain_pathname = r'c:\Program Files\libsvm\windows\svm-train.exe'
-			self.gnuplot_pathname = r'c:\tmp\gnuplot\binary\pgnuplot.exe'
+			self.gnuplot_pathname = r'..\gnuplot\bin\gnuplot.exe'
 		self.fold = 5
 		self.c_begin, self.c_end, self.c_step = -5,  15,  2
 		self.g_begin, self.g_end, self.g_step =  3, -15, -2
@@ -351,7 +352,7 @@ def find_parameters(dataset_pathname, options=''):
 			stdout_str += 'g={0}, '.format(2.0**best_g)
 			output_str += 'log2g={0} '.format(g)
 		stdout_str += 'rate={0})'.format(best_rate)
-		print(stdout_str)
+		#print(stdout_str)
 		if options.out_pathname and not resumed:
 			output_str += 'rate={0}\n'.format(rate)
 			result_file.write(output_str)
@@ -359,7 +360,7 @@ def find_parameters(dataset_pathname, options=''):
 
 		return best_c,best_g,best_rate
 
-	options = GridOption(dataset_pathname, options);
+	options = GridOption(dataset_pathname, options)
 
 	if options.gnuplot_pathname:
 		gnuplot = Popen(options.gnuplot_pathname,stdin = PIPE,stdout=PIPE,stderr=PIPE).stdin
@@ -455,9 +456,10 @@ def find_parameters(dataset_pathname, options=''):
 	if best_g != None:
 		best_param['g'] = 2.0**best_g
 		best_cg += [2.0**best_g]
-	print('{0} {1}'.format(' '.join(map(str,best_cg)), best_rate))
+	#print('{0} {1}'.format(' '.join(map(str,best_cg)), best_rate))
 
-	return best_rate, best_param
+	#return best_rate, best_param
+	return best_param['c'],best_param['g'],best_rate
 
 
 if __name__ == '__main__':
@@ -493,7 +495,8 @@ svm_options : additional options for svm-train""")
 	dataset_pathname = sys.argv[-1]
 	options = sys.argv[1:-1]
 	try:
-		find_parameters(dataset_pathname, options)
+		c,g,rate = find_parameters(dataset_pathname, options)
+		print(c,g,rate,end="")
 	except (IOError,ValueError) as e:
 		sys.stderr.write(str(e) + '\n')
 		sys.stderr.write('Try "grid.py" for more information.\n')
