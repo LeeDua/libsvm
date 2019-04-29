@@ -1,0 +1,5 @@
+python grid.py ../windows/svm-train.exe -gnuplot ../gnuplot/bin/gnuplot.exe data.txt.scale
+python grid.py data.txt.scale
+python easy.py data.txt
+
+cd F://git_repos//libsvm//tools
